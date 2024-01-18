@@ -1,0 +1,73 @@
+---
+title: 'Analyzing the Spectrum of Emotional Appropriateness: Insights from a Comprehensive Study'
+author: "Wilson Cyrus Lai, David Fang, Li Qian Qian"
+date: "2024-01-16"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r message=FALSE}
+# Load necessary libraries
+library(readxl)
+library(dplyr)
+library(ggplot2)
+
+# Load the data
+data <- read_excel("Wilson_Emotion_Dataset.xlsx")
+
+# Ensure 'Appropriate' is numeric, coerce non-numeric values to NA
+data$Appropriate <- as.numeric(as.character(data$Appropriate))
+
+# Filter out 'NA' and 'Referring to each of the 17 emotions' from the 'emot' column
+data <- data %>% filter(!is.na(emot), emot != "Refering to each of the 17 emotions")
+
+# Calculate mean appropriateness score for each emotion
+mean_scores <- data %>%
+  group_by(emot) %>%
+  summarise(mean_appropriateness = mean(Appropriate, na.rm = TRUE))
+
+# Sorting the mean_scores dataframe in ascending order of mean_appropriateness
+mean_scores <- mean_scores %>% arrange(mean_appropriateness)
+
+# Convert 'emot' to a factor with levels ordered based on the sorted mean_appropriateness
+mean_scores$emot <- factor(mean_scores$emot, levels = mean_scores$emot)
+
+# Plotting the horizontal bar chart
+ggplot(mean_scores, aes(y = emot, x = mean_appropriateness, fill = emot)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Mean Appropriateness Scores for All Emotions",
+       y = "Emotions",
+       x = "Mean Appropriateness Score") +
+  scale_fill_viridis_d() + 
+  theme(legend.position = "none")
+
+```
+
+
+## Introduction
+
+Emotions, complex mental states arising from neurophysiological changes, encompass a blend of thoughts, feelings, behavioral responses, and varying degrees of pleasure or displeasure. Traditional theories, like those proposed by Ekman, identify six basic emotions: happiness, anger, fear, sadness, disgust, and surprise. Building upon this foundation, our research expanded to explore both explicit and implicit emotions, capturing a broader, more nuanced understanding of this intricate domain. Through our analysis, we gathered 3400 data points across 17 emotions, focusing particularly on the notion of 'emotional appropriateness' within dyadic communication contexts. 
+
+## Defining Emotional Appropriateness
+
+Emotional appropriateness, in our study, refers to the extent an individual perceives an emotional response as correct and suitable in a given interaction. This concept is pivotal in understanding emotional intelligence and societal norms, offering insights into the average perceptions of various emotions and their trends across different demographics.
+
+## Key Findings: The Spectrum of Emotional Appropriateness
+
+Our findings present a striking pattern in the perceived appropriateness of different emotions:
+
+1. **Positive Emotions:** Happiness, gratitude, and hope exhibited high mean appropriateness scores. These emotions, topping our charts, signify their universal acceptance and desirability in both social and professional settings.
+
+2. **Negative Emotions:** In stark contrast, emotions such as anger, contempt, and disgust were positioned at the lower end of the spectrum. This suggests a consensus on their negative impact in interpersonal interactions.
+
+3. **Neutral Emotions:** Interestingly, neutral emotions (e.g., indifference, no emotion, ambivalence) were slightly positively perceived. This implies that neutrality in confusing or ambiguous situations can lead to positive interpretations.
+
+4. **Internal Emotions:** Inner emotions, such as hope (+), pride (+), shame (-), and fear (-), show high correlations with their broader emotional categories, indicating a strong connection to their 'parent' emotions.
+
+## Concluding Thoughts
+
+Our journey through the emotional landscape via data analysis reveals much about societal norms regarding emotional expression. It raises critical questions about the influence of cultural, educational, and generational factors in shaping our emotional perceptions. As we delve deeper into the complex web of human emotions, data-driven insights like these prove invaluable. They not only enhance our understanding of individual emotional responses but also offer a window into the collective emotional psyche of our society. Future research in this area can further illuminate the intricate interplay between emotion, communication, and social norms, contributing to a richer, more comprehensive understanding of human behavior.
+
+
